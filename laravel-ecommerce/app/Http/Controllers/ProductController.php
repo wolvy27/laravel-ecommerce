@@ -8,32 +8,36 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    // Show all products
+    // List all products — allow authenticated users to view
     public function index()
     {
         $products = Product::all();
         return view('products.index', compact('products'));
     }
 
-    // Show create form
+    // Show form to create a product — admin only
     public function create()
     {
+        $this->authorizeAdmin();
+
         return view('products.create');
     }
 
-    // Store new product
+    // Store new product — admin only
     public function store(Request $request)
     {
+        $this->authorizeAdmin();
+
         $request->validate([
-            'name' => 'required',
-            'category' => 'required',
-            'description' => 'required',
+            'name' => 'required|string|max:255',
+            'category' => 'required|string|max:255',
+            'description' => 'required|string',
             'price' => 'required|numeric',
             'stock_quantity' => 'required|integer',
             'image' => 'nullable|image|max:2048',
         ]);
 
-        $data = $request->all();
+        $data = $request->only(['name', 'category', 'description', 'price', 'stock_quantity']);
 
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('products', 'public');
@@ -41,45 +45,64 @@ class ProductController extends Controller
 
         Product::create($data);
 
-        return redirect()->route('products.index')->with('success', 'Product created.');
+        return redirect()->route('products.index')->with('success', 'Product created successfully.');
     }
 
-    // Show edit form
+    // Show edit form — admin only
     public function edit(Product $product)
     {
+        $this->authorizeAdmin();
+
         return view('products.edit', compact('product'));
     }
 
-    // Update product
+    // Update product — admin only
     public function update(Request $request, Product $product)
     {
+        $this->authorizeAdmin();
+
         $request->validate([
-            'name' => 'required',
-            'category' => 'required',
-            'description' => 'required',
+            'name' => 'required|string|max:255',
+            'category' => 'required|string|max:255',
+            'description' => 'required|string',
             'price' => 'required|numeric',
             'stock_quantity' => 'required|integer',
             'image' => 'nullable|image|max:2048',
         ]);
 
-        $data = $request->all();
+        $data = $request->only(['name', 'category', 'description', 'price', 'stock_quantity']);
 
         if ($request->hasFile('image')) {
-            if ($product->image) Storage::delete('public/' . $product->image);
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image);
+            }
             $data['image'] = $request->file('image')->store('products', 'public');
         }
 
         $product->update($data);
 
-        return redirect()->route('products.index')->with('success', 'Product updated.');
+        return redirect()->route('products.index')->with('success', 'Product updated successfully.');
     }
 
-    // Delete product
+    // Delete product — admin only
     public function destroy(Product $product)
     {
-        if ($product->image) Storage::delete('public/' . $product->image);
+        $this->authorizeAdmin();
+
+        if ($product->image) {
+            Storage::disk('public')->delete($product->image);
+        }
+
         $product->delete();
 
-        return redirect()->route('products.index')->with('success', 'Product deleted.');
+        return redirect()->route('products.index')->with('success', 'Product deleted successfully.');
+    }
+
+    // Helper function to check admin role
+    private function authorizeAdmin()
+    {
+        if (!auth()->check() || auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized action.');
+        }
     }
 }
