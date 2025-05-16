@@ -47,7 +47,7 @@
 
         <div class="text-xl font-semibold">Total: ${{ number_format($total, 2) }}</div>
 
-        <a href="{{ route('checkout.form') }}" class="mt-4 inline-block bg-green-500 text-white px-6 py-2 rounded">Proceed to Checkout</a>
+        <a href="{{ route('checkout.form') }}" class="mt-4 inline-block bg-green-500 text-blue px-6 py-2 rounded">Proceed to Checkout</a>
 
     @else
         <p>Your cart is empty.</p>
