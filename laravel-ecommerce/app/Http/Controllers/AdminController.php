@@ -13,6 +13,6 @@ class AdminController extends Controller
     }
 
     $orders = \App\Models\Order::with('orderItems.product', 'user')->get();
-    return view('admin.orders.index', compact('orders'));
+    return view('admin.orders', compact('orders'));
     }
 }

@@ -15,7 +15,7 @@
 
             <h3 class="mt-4 font-semibold">Items:</h3>
             <ul class="list-disc pl-6">
-                @foreach($order->items as $item)
+                @foreach($order->orderItems as $item)
                     <li>{{ $item->product->name ?? '[Deleted Product]' }} x{{ $item->quantity }} – ${{ $item->price }}</li>
                 @endforeach
             </ul>
