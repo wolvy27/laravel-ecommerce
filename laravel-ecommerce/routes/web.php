@@ -13,10 +13,8 @@ Route::get('/', function () {
     return redirect()->route('products.index');
 });
 
-// Admin-only routes for orders (you can keep middleware or use controller check)
-Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/admin/orders', [AdminController::class, 'orders'])->name('admin.orders');
-});
+Route::get('/admin/orders', [AdminController::class, 'orders'])->middleware('auth')->name('admin.orders');
+
 
 // Auth routes
 Auth::routes();

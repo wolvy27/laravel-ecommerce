@@ -11,7 +11,17 @@
     </a>
 
     <h1 class="text-2xl font-bold mb-4">Product List</h1>
-    <a href="{{ route('products.create') }}" class="bg-blue-500 text-blue px-4 py-2 rounded mb-4 inline-block">Add Product</a>
+    @if(auth()->user()->role === 'admin')
+    <div class="flex gap-4 mb-4">
+        <a href="{{ route('products.create') }}" class="bg-blue-500 text-blue px-4 py-2 rounded hover:bg-blue-600">
+            Add Product
+        </a>
+        <a href="{{ route('admin.orders') }}" class="bg-indigo-500 text-blue px-4 py-2 rounded hover:bg-indigo-600">
+            View Orders
+        </a>
+    </div>
+    @endif
+
 
     @if(session('success'))
         <div class="text-green-600">{{ session('success') }}</div>
